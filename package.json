@@ -1,0 +1,38 @@
+{
+  "name": "remarkui",
+  "version": "1.0.0",
+  "description": "UI Library",
+  "main": "build/index.js",
+  "baseUrl": "build/",
+  "author": "fredy <fr3ddy@me.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src --out-dir ./ -d build",
+    "postinstall": "postinstall-build lib \"npm run build\"",
+    "lint": "eslint --fix src",
+    "lint:s": "eslint src"
+  },
+  "dependencies": {
+    "samsarajs": "^0.2.4",
+    "postinstall-build": "^5.0.3"
+  },
+  "peerDependencies": {
+    "prop-types": "15.7.2",
+    "react": "^16.8.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-eslint": "^10.0.2",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb": "17.1.1",
+    "eslint-plugin-import": "2.18.0",
+    "eslint-plugin-jsx-a11y": "6.2.3",
+    "eslint-plugin-react": "7.14.2",
+    "eslint-plugin-react-hooks": "1.6.1",
+    "prop-types": "15.7.2",
+    "react": "^16.8.6"
+  }
+}
