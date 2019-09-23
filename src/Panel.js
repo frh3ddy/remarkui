@@ -6,7 +6,7 @@ import { SamsaraContext } from './RemarkContext'
 
 const { Layouts: { SequentialLayout, FlexibleLayout } } = samsara
 
-const PanelContext = React.createContext()
+const PanelContext = React.createContext({PanelParentNode: undefined})
 
 function getMethod(parent) {
     switch (true) {
@@ -26,6 +26,7 @@ function getFlex({
 }
 
 const Panel = ({
+    isRoot,
     children,
     height, width, minHeight, minWidth,
     opacity,
@@ -41,7 +42,10 @@ const Panel = ({
     z,
     layout,
 }) => {
-    const { parentNode } = useContext(SamsaraContext)
+    const { ContextParentNode } = useContext(SamsaraContext)
+    const { PanelParentNode } = useContext(PanelContext)
+    let parentNode = isRoot === false ? PanelParentNode : ContextParentNode
+
     const flex = getFlex({height, width, minHeight, minWidth})
     const method = getMethod(parentNode)
 
@@ -106,9 +110,13 @@ const Panel = ({
         }
     }, [opacity, panelView, parentNode])
 
+    const childrenWithProps = React.Children.map(children, child =>
+        React.cloneElement(child, {isRoot: false})
+    )
+
     return (
-        <PanelContext.Provider value={{ parentNode: panelView.node }}>
-            {children}
+        <PanelContext.Provider value={{ PanelParentNode: panelView.node }}>
+            {childrenWithProps}
         </PanelContext.Provider>
     )
 }

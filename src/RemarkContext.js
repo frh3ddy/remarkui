@@ -8,7 +8,7 @@ const context = new Context()
 context.setPerspective(1000)
 context.setPerspectiveOrigin(20)
 
-export const SamsaraContext = React.createContext()
+export const SamsaraContext = React.createContext({ContextParentNode: undefined})
 
 const RemarkContext = ({ children }) => {
     const refEl = useRef(null)
@@ -18,7 +18,7 @@ const RemarkContext = ({ children }) => {
         }
     }, [refEl])
     return (
-        <SamsaraContext.Provider value={{ context, parentNode: context }}>
+        <SamsaraContext.Provider value={{ context, ContextParentNode: context }}>
             <div ref={refEl}>
                 {children}
             </div>
