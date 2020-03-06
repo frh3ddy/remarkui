@@ -13,8 +13,8 @@
     "lint:s": "eslint src"
   },
   "dependencies": {
-    "samsarajs": "^0.2.4",
-    "postinstall-build": "^5.0.3"
+    "postinstall-build": "^5.0.3",
+    "samsarajs": "^0.2.4"
   },
   "peerDependencies": {
     "prop-types": "15.7.2",
