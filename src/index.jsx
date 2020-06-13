@@ -1,3 +1,11 @@
-import panel from './Panel'
-export const Panel = panel
-export  {default} from './RemarkContext'
+import panel from "./Panel";
+import stackPanel from "./StackPanel";
+import surface from "./Surface";
+import onClick from "./OnClick";
+export { Move } from "./Move";
+export { Scale } from "./Scale";
+export const Surface = surface;
+export const Panel = panel;
+export const StackPanel = stackPanel;
+export const OnClick = onClick;
+export { default } from "./RemarkContext";

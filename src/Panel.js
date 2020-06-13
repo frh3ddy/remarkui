@@ -1,128 +1,128 @@
-import React, { useEffect, useContext } from 'react'
-import PropTypes from 'prop-types'
-import samsara from 'samsarajs'
-import PanelView from './views/PanelView'
-import { SamsaraContext } from './RemarkContext'
+import React, { useEffect, useLayoutEffect, useContext, useRef } from "react";
+import SamsaraContext from "./samsaraContext";
+import samsara from "samsarajs";
+import PanelView from "./views/PanelView";
 
-const { Layouts: { SequentialLayout, FlexibleLayout } } = samsara
-
-const PanelContext = React.createContext({PanelParentNode: undefined})
+const {
+  Layouts: { SequentialLayout, FlexibleLayout },
+} = samsara;
 
 function getMethod(parent) {
-    switch (true) {
+  switch (true) {
     case parent instanceof SequentialLayout:
-        return 'push'
+      return "push";
     case parent instanceof FlexibleLayout:
-        return 'push'
+      return "push";
     default:
-        return 'add'
-    }
+      return "add";
+  }
 }
 
-function getFlex({
-    height, width, minHeight, minWidth,
-}) {
-    return isNaN(width || minHeight || minWidth || height) ? 1 : undefined
+function getFlex({ height, width, minHeight, minWidth }) {
+  return isNaN(width || minHeight || minWidth || height) ? 1 : undefined;
 }
 
 const Panel = ({
-    isRoot,
-    children,
-    height, width, minHeight, minWidth,
-    opacity,
-    proportions,
+  children,
+  height,
+  width,
+  minHeight,
+  minWidth,
+  opacity,
+  margin,
+  color,
+  zIndex,
+  border,
+  cornerRadius,
+  alignment,
+  x,
+  y,
+  z,
+  layout,
+}) => {
+  const { node, context } = useContext(SamsaraContext);
+  let parentNode = context || node;
+
+  if (!parentNode) {
+    throw new Error("Panel should be a child of Context");
+  }
+
+  const flex = getFlex({ height, width, minHeight, minWidth });
+  const method = getMethod(parentNode);
+
+  let _proportions = [1, 1];
+  if (typeof width === "string" || typeof height === "string") {
+    if (width) {
+      _proportions[0] = parseInt(width, 10) / 100;
+    }
+
+    if (height) {
+      _proportions[1] = parseInt(height, 10) / 100;
+    }
+  } else {
+    _proportions = undefined;
+  }
+
+  const viewOptions = {
+    _opacity: opacity === undefined ? 1 : opacity,
+    minHeight,
+    _proportions,
     margin,
     color,
-    zIndex,
+    width,
+    zIndex: zIndex ? zIndex() : undefined,
+    height,
     border,
     cornerRadius,
     alignment,
-    x,
-    y,
-    z,
+    translation: [x, y, z],
     layout,
-}) => {
-    const { ContextParentNode } = useContext(SamsaraContext)
-    const { PanelParentNode } = useContext(PanelContext)
-    let parentNode = isRoot === false ? PanelParentNode : ContextParentNode
+  };
 
-    const flex = getFlex({height, width, minHeight, minWidth})
-    const method = getMethod(parentNode)
+  const { current: panelView } = useRef(new PanelView(viewOptions));
+  useLayoutEffect(() => {
+    parentNode[method](panelView, flex);
+  }, [panelView]);
 
-    let _proportions = [1, 1]
-    if (typeof width === 'string' || typeof height === 'string') {
-        if (width) {
-            _proportions[0] = parseInt(width, 10) / 100
-        }
-
-        if (height) {
-            _proportions[1] = parseInt(height, 10) / 100
-        }
-    } else {
-        _proportions = undefined
+  useEffect(() => {
+    if (panelView.background) {
+      panelView.background.setProperties({
+        "z-index": zIndex() ? 1 : 0,
+      });
     }
+  }, [panelView, zIndex]);
 
-    const viewOptions = {
-        _opacity: opacity === undefined ? 1 : opacity,
-        minHeight,
-        _proportions,
-        margin,
-        color,
-        width,
-        zIndex: zIndex ? zIndex() : undefined,
-        height,
-        border,
-        cornerRadius,
-        alignment,
-        translation: [x, y, z],
-        layout,
-    }
+  useEffect(() => {
+    panelView.updateTranslation([x, y, z]);
+  }, [panelView, x, y, z]);
 
-    const panelView = new PanelView(viewOptions)
+  useEffect(() => {
+    panelView.updateSize([width, height]);
+  }, [width, height, panelView]);
 
-    parentNode[method](panelView, flex)
+  useEffect(() => {
+    panelView.updateColor(color);
+  }, [color, panelView]);
 
-    useEffect(() => {
-        panelView.background.setProperties({
-            'z-index': zIndex() ? 1 : 0,
-        })
-    }, [panelView, zIndex])
+  useEffect(() => {
+    panelView.updateOpacity(opacity);
+    return () => {
+      if (getMethod(parentNode) === "push") {
+        parentNode.unlink(panelView);
+      }
+      setTimeout(() => panelView.remove(), 66);
+    };
+  }, [opacity, panelView, parentNode]);
 
-    useEffect(() => {
-        panelView.updateTranslation([x, y, z])
-    }, [panelView, x, y, z])
+  return (
+    <SamsaraContext.Provider value={{ node: panelView.node, view: panelView }}>
+      {children}
+    </SamsaraContext.Provider>
+  );
+};
 
-    useEffect(() => {
-        panelView.updateSize([width, height])
-    }, [width, height, panelView])
+Panel.defaultProps = {
+  zIndex: () => {},
+};
 
-    useEffect(() => {
-        panelView.updateColor(color)
-    }, [color, panelView])
-
-    useEffect(() => {
-        panelView.updateOpacity(opacity)
-        return () => {
-            if (getMethod(parentNode) === 'push') {
-                parentNode.unlink(panelView)
-            }
-            setTimeout(() => panelView.remove(), 66)
-        }
-    }, [opacity, panelView, parentNode])
-
-    const childrenWithProps = React.Children.map(children, child =>
-        React.cloneElement(child, {isRoot: false})
-    )
-
-    return (
-        <PanelContext.Provider value={{ PanelParentNode: panelView.node }}>
-            {childrenWithProps}
-        </PanelContext.Provider>
-    )
-}
-
-Panel.defaultProps  = {
-    zIndex: () => {}
-}
-
-export default Panel
+export default Panel;
