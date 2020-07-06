@@ -1,2 +1,6 @@
-import { createContext } from "react";
-export default createContext({ node: undefined, context: undefined });
+import { createContext } from 'react';
+export default createContext({
+  node: undefined,
+  context: undefined,
+  zIndex: undefined,
+});
