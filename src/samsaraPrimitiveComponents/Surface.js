@@ -50,5 +50,3 @@ export const SurfaceComponent = React.memo(
     );
   })
 );
-
-SurfaceComponent.displayName = 'Surface';

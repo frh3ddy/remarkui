@@ -7,8 +7,6 @@ const {
 } = samsara;
 
 const context = new Context();
-// context.setPerspective(1000);
-// context.setPerspectiveOrigin(20);
 
 const RemarkContext = ({ children }) => {
   const refEl = useRef(null);

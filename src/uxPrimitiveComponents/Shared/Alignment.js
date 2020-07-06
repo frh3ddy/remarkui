@@ -7,7 +7,7 @@ export const Alignment = React.memo(
     let childrenWidth;
     const { origin, align } = getAlignment(alignment);
 
-    if (alignment && React.Children.count(children)) {
+    if (alignment && React.Children.count(render)) {
       if (
         alignment === 'top' ||
         alignment === 'verticalCenter' ||
