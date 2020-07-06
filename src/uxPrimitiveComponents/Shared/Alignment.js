@@ -8,34 +8,12 @@ export const Alignment = React.memo(
     const { origin, align } = getAlignment(alignment);
 
     if (alignment && React.Children.count(render)) {
-      if (
-        alignment === 'top' ||
-        alignment === 'verticalCenter' ||
-        alignment === 'bottom'
-      ) {
-        childrenHeight = findHeight(render, 'height');
-        childrenWidth = findHeight(render, 'width');
-      } else if (
-        alignment === 'center' ||
-        alignment === 'topCenter' ||
-        alignment === 'topLeft' ||
-        alignment === 'topRight' ||
-        alignment === 'centerLeft' ||
-        alignment === 'centerRight' ||
-        alignment === 'bottomLeft' ||
-        alignment === 'bottomCenter' ||
-        alignment === 'bottomRight'
-      ) {
-        childrenHeight = findHeight(render, 'height');
-        childrenWidth = findHeight(render, 'width');
-      } else {
-        childrenWidth = findHeight(render, 'width');
-      }
+      childrenHeight = findNestedSize(render, 'height');
+      childrenWidth = findNestedSize(render, 'width');
     }
 
     const nw = (margin || 0) * 2 + (width || childrenWidth || 0);
     const nh = (margin || 0) * 2 + (height || childrenHeight || 0);
-    console.log(nw, nh);
 
     return (
       <Node size={[nw, nh]} origin={origin} align={align}>
@@ -84,7 +62,7 @@ function getAlignment(align) {
   }
 }
 
-function findHeight(children, prop) {
+function findNestedSize(children, prop) {
   const sizes = React.Children.map(children, (child) => {
     const size = child.props[prop];
     if (size) {
@@ -104,7 +82,7 @@ function findHeight(children, prop) {
 
   if (nestedChildren.length) {
     const nestedSizes = nestedChildren.map((child) => {
-      return findHeight(child, prop);
+      return findNestedSize(child, prop);
     });
 
     return Math.max(...nestedSizes);
