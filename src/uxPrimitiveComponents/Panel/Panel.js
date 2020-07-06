@@ -6,6 +6,8 @@ import { Alignment } from '../Shared/Alignment';
 
 export const Panel = React.memo((props) => {
   const { children, margin, width, height, color, alignment } = props;
+  const nw = width !== undefined ? (margin || 0) * 2 + width : undefined;
+  const nh = height !== undefined ? (margin || 0) * 2 + height : undefined;
 
   if (color) {
     if (alignment) {
@@ -15,6 +17,7 @@ export const Panel = React.memo((props) => {
           render={children}
           width={width}
           height={height}
+          margin={margin}
         >
           <Rectangle children={children} color={color} margin={margin} />
         </Alignment>
@@ -32,7 +35,7 @@ export const Panel = React.memo((props) => {
   }
 
   return (
-    <Size width={width} height={height}>
+    <Size width={nw} height={nh}>
       <Margin margin={margin}>{children}</Margin>
     </Size>
   );

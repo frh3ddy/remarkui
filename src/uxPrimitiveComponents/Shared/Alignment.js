@@ -2,7 +2,7 @@ import React from 'react';
 import { Node } from '../../samsaraPrimitiveComponents/Node';
 
 export const Alignment = React.memo(
-  ({ children, alignment, render, width, height }) => {
+  ({ children, alignment, render, width, height, margin }) => {
     let childrenHeight;
     let childrenWidth;
     const { origin, align } = getAlignment(alignment);
@@ -14,6 +14,7 @@ export const Alignment = React.memo(
         alignment === 'bottom'
       ) {
         childrenHeight = findHeight(render, 'height');
+        childrenWidth = findHeight(render, 'width');
       } else if (
         alignment === 'center' ||
         alignment === 'topCenter' ||
@@ -32,12 +33,12 @@ export const Alignment = React.memo(
       }
     }
 
+    const nw = (margin || 0) * 2 + (width || childrenWidth || 0);
+    const nh = (margin || 0) * 2 + (height || childrenHeight || 0);
+    console.log(nw, nh);
+
     return (
-      <Node
-        size={[width || childrenWidth, height || childrenHeight]}
-        origin={origin}
-        align={align}
-      >
+      <Node size={[nw, nh]} origin={origin} align={align}>
         {children}
       </Node>
     );

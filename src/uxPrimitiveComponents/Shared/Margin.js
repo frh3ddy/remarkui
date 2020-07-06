@@ -1,5 +1,5 @@
-import React from "react";
-import { Node } from "../../samsaraPrimitiveComponents/Node";
+import React from 'react';
+import { Node } from '../../samsaraPrimitiveComponents/Node';
 
 export const Margin = React.memo(({ children, margin }) => {
   if (margin) {

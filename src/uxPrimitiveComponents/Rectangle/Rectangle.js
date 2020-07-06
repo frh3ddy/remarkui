@@ -8,6 +8,8 @@ import { Alignment } from '../Shared/Alignment';
 export const Rectangle = React.memo(
   ({ children, margin, width, height, color, alignment }) => {
     const properties = { 'background-color': color };
+    const nw = width !== undefined ? (margin || 0) * 2 + width : undefined;
+    const nh = height !== undefined ? (margin || 0) * 2 + height : undefined;
 
     if (alignment) {
       if (margin) {
@@ -15,8 +17,8 @@ export const Rectangle = React.memo(
           <Alignment
             alignment={alignment}
             render={children}
-            width={width}
-            height={height}
+            width={nw}
+            height={nh}
           >
             <Margin margin={margin}>
               <SurfaceComponent properties={properties}>
@@ -31,8 +33,8 @@ export const Rectangle = React.memo(
         <Alignment
           alignment={alignment}
           render={children}
-          width={width}
-          height={height}
+          width={nw}
+          height={nh}
         >
           <SurfaceComponent properties={properties}>
             {children}
@@ -41,25 +43,15 @@ export const Rectangle = React.memo(
       );
     }
 
-    const content = (
-      <Node>
-        <SurfaceComponent properties={properties}>{children}</SurfaceComponent>
-      </Node>
-    );
-
-    if (
-      margin > (width || Number(!width)) ||
-      margin > (height || Number(!height))
-    ) {
-      return (
-        <Size width={width} height={height}>
-          {content}
-        </Size>
-      );
-    }
     return (
-      <Size width={width} height={height}>
-        <Margin margin={margin}>{content}</Margin>
+      <Size width={nw} height={nh}>
+        <Margin margin={margin}>
+          <Node>
+            <SurfaceComponent properties={properties}>
+              {children}
+            </SurfaceComponent>
+          </Node>
+        </Margin>
       </Size>
     );
   }
