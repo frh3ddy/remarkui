@@ -8,8 +8,34 @@ import { Alignment } from '../Shared/Alignment';
 export const Rectangle = React.memo(
   ({ children, margin, width, height, color, alignment }) => {
     const properties = { 'background-color': color };
-    const nw = width !== undefined ? (margin || 0) * 2 + width : undefined;
-    const nh = height !== undefined ? (margin || 0) * 2 + height : undefined;
+
+    let mSizeV = 0;
+    let mSizeH = 0;
+
+    if (margin) {
+      const mm = parseStringMargin(margin.toString());
+
+      switch (mm.length) {
+        case 4:
+          mSizeV = mm[1] + mm[3];
+          mSizeH = mm[0] + mm[2];
+          break;
+        case 3:
+          mSizeV = mm[1] * 2;
+          mSizeH = mm[0] + mm[2];
+          break;
+        case 2:
+          mSizeV = mm[1] * 2;
+          mSizeH = mm[0] * 2;
+          break;
+        default:
+          mSizeV = mm[0] * 2;
+          mSizeH = mm[0] * 2;
+      }
+    }
+
+    const nw = width !== undefined ? mSizeH + width : undefined;
+    const nh = height !== undefined ? mSizeV + height : undefined;
 
     if (alignment) {
       if (margin) {
@@ -56,3 +82,11 @@ export const Rectangle = React.memo(
     );
   }
 );
+
+function parseStringMargin(string) {
+  return string
+    .split(',')
+    .filter((substr) => substr.length > 0)
+    .map((str) => parseFloat(str))
+    .filter((number) => !isNaN(number));
+}

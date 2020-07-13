@@ -7,13 +7,42 @@ export const Alignment = React.memo(
     let childrenWidth;
     const { origin, align } = getAlignment(alignment);
 
+    let mSizeV = 0;
+    let mSizeH = 0;
+
+    if (margin) {
+      const mm = parseStringMargin(margin.toString());
+      switch (mm.length) {
+        case 4:
+          mSizeV = mm[1] + mm[3];
+          mSizeH = mm[0] + mm[2];
+          break;
+        case 3:
+          mSizeV = mm[1] * 2;
+          mSizeH = mm[0] + mm[2];
+          break;
+        case 2:
+          mSizeV = mm[1] * 2;
+          mSizeH = mm[0] * 2;
+          break;
+        default:
+          mSizeV = mm[0] * 2;
+          mSizeH = mm[0] * 2;
+      }
+    }
+
+    let nw;
+    let nh;
+
     if (alignment && React.Children.count(render)) {
       childrenHeight = findNestedSize(render, 'height');
       childrenWidth = findNestedSize(render, 'width');
+      nw = margin ? mSizeH + childrenWidth : childrenWidth;
+      nw = margin ? mSizeV + childrenHeight : childrenHeight;
     }
 
-    const nw = (margin || 0) * 2 + (width || childrenWidth || 0);
-    const nh = (margin || 0) * 2 + (height || childrenHeight || 0);
+    nw = width ? mSizeH + width : width;
+    nh = height ? mSizeV + height : height;
 
     return (
       <Node size={[nw, nh]} origin={origin} align={align}>
@@ -64,11 +93,11 @@ function getAlignment(align) {
 
 function findNestedSize(children, prop) {
   const sizes = React.Children.map(children, (child) => {
-    const size = child.props[prop];
+    const size = child && child.props && child.props[prop];
     if (size) {
       return size;
     } else if (React.Children.count(child)) {
-      return child.props.children;
+      return (child && child.props && child.props.children) || 0;
     }
   });
 
@@ -89,4 +118,12 @@ function findNestedSize(children, prop) {
   }
 
   return 0;
+}
+
+function parseStringMargin(string) {
+  return string
+    .split(',')
+    .filter((substr) => substr.length > 0)
+    .map((str) => parseFloat(str))
+    .filter((number) => !isNaN(number));
 }
