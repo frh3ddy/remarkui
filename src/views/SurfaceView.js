@@ -18,13 +18,13 @@ export default View.extend({
     const surfaceOrigin = this.origin.map((value) => value);
     const nodeAlign = this.align.map((value) => value);
 
-    if (height || height) {
+    if (width || height) {
       size = [width, height];
     }
 
     this.surface = new Surface({
       properties: { color: textColor, background: color || "" },
-      size,
+      size: size,
       origin: surfaceOrigin,
       target,
     });

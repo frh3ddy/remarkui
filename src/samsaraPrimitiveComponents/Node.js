@@ -1,63 +1,33 @@
-import {
-  useLayoutEffect,
-  useContext,
-  useRef,
-  useState,
-  useEffect,
-} from "react";
-import ReactDOM from "react-dom";
-
-import samsara from "samsarajs";
+import React, { useLayoutEffect, useContext, useMemo } from 'react';
+import SamsaraContext from '../samsaraContext';
+import samsara from 'samsarajs';
 
 const {
-  Layouts: { SequentialLayout, FlexibleLayout },
+  Core: { Transform },
 } = samsara;
 
-function getMethod(parent) {
-  switch (true) {
-    case parent instanceof SequentialLayout:
-      return "push";
-    case parent instanceof FlexibleLayout:
-      return "push";
-    default:
-      return "add";
-  }
-}
+export const Node = React.memo(
+  React.forwardRef((props, ref) => {
+    const { node, context } = useContext(SamsaraContext);
 
-const Node = (props) => {
-  const { node, context } = useContext(SamsaraContext);
-  let parentNode = context || node;
-  const method = getMethod(parentNode);
-  const [, setHh] = useState(false);
+    let parentNode = context || node;
 
-  const containerRef = useRef(null);
+    let { children, ...nodeProperties } = props;
 
-  const { current: surface } = useRef(
-    new SurfaceView({
-      textColor: props.textColor,
-      color: props.color,
-      containerRef,
-      height: props.height,
-      width: props.width,
-      setHh,
-    })
-  );
+    const newNode = useMemo(() => {
+      return parentNode.add(nodeProperties);
+    }, []);
 
-  useLayoutEffect(() => {
-    parentNode[method](surface);
-  }, [surface]);
+    useLayoutEffect(() => {
+      return () => {
+        newNode.remove();
+      };
+    }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      surface.setAlignment(props.alignment);
-    }, 0);
-  }, [props.alignment]);
-
-  if (containerRef.current) {
-    return ReactDOM.createPortal(props.children, containerRef.current);
-  } else {
-    return null;
-  }
-};
-
-export default Node;
+    return (
+      <SamsaraContext.Provider value={{ node: newNode }}>
+        {children}
+      </SamsaraContext.Provider>
+    );
+  })
+);

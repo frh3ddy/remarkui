@@ -45,7 +45,7 @@ const ReactSurface = (props) => {
   );
 
   useLayoutEffect(() => {
-    parentNode[method](surface);
+    if (parentNode) parentNode[method](surface);
   }, [surface]);
 
   useEffect(() => {

@@ -1,15 +1,12 @@
-import React, { useEffect, useRef } from "react";
-import PropTypes from "prop-types";
-import SamsaraContext from "./samsaraContext";
-import samsara from "samsarajs";
+import React, { useEffect, useRef } from 'react';
+import SamsaraContext from './samsaraContext';
+import samsara from 'samsarajs';
 
 const {
-  DOM: { Context }
+  DOM: { Context },
 } = samsara;
 
 const context = new Context();
-context.setPerspective(1000);
-context.setPerspectiveOrigin(20);
 
 const RemarkContext = ({ children }) => {
   const refEl = useRef(null);
@@ -23,10 +20,6 @@ const RemarkContext = ({ children }) => {
       <div ref={refEl}>{children}</div>
     </SamsaraContext.Provider>
   );
-};
-
-RemarkContext.propTypes = {
-  children: PropTypes.node
 };
 
 export default RemarkContext;
